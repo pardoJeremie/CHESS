@@ -17,7 +17,7 @@ class Board;
 
 class Piece {
 public:
-    Piece(Point& position, std::string& name, bool teamColor) : _position(position), _name(name), _teamColor(teamColor) {}
+    Piece(Point& position, bool teamColor, std::string& name) : _position(position), _name(name), _teamColor(teamColor) {}
     Piece(const Piece&) = delete;
     Piece(Piece&&) = delete;
     Piece& operator=( const Piece&) = delete;
@@ -25,8 +25,11 @@ public:
     ~Piece(){}
     
     bool getTeamColor() const { return _teamColor; }
+    
+    std::string getName() const { return _name; }
 
     bool getMoved() const { return _moved; }
+    
     
     const Point& getPosition() const { return _position; }
     void setPosition(const Point& position) {
@@ -47,6 +50,11 @@ private:
     const std::string _name;
     bool _teamColor; // BLACK = 0, WHITE = 1
 };
+
+inline bool operator==(const Piece& a,const Piece& b)
+{
+    return a.getPosition() == b.getPosition() && a.getTeamColor() == b.getTeamColor() && a.getName() == b.getName() ;
+}
 
 //*****************
 //**    Pieces   **

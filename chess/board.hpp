@@ -15,27 +15,23 @@
 
 class Board {
 public:
-    Board() {}
+    Board() : _playZone (RectangleZone(8,8)) {}
     Board(const Board&) = delete;
     Board(Board&&) = delete;
     Board& operator=( const Board&) = delete;
     Board& operator=(Board&&) = delete;
-    ~Board(){
-        delete _playZone;
-    }
+    ~Board() {}
     
-    std::vector<Piece*>& getPiecesList() { return *_piecesList; }
-    void setPiecesList(std::vector<Piece*>* piecesList);
-    bool addToPiecesList(Piece* piece);
-    bool deletInPiecesList(Piece* piece);
+    std::vector<Piece>& getPiecesList() { return _piecesList; }
+    bool addToPiecesList(Piece piece);
+    bool deletInPiecesList(Piece piece);
     
-    bool onValidePosition(const Point& point, bool teamColor) const;
+    bool onValidePosition(const Point& point, bool teamColor, bool enemy_necessary = false);
     
 private:
-    RectangleZone* _playZone = new RectangleZone(8,8);
-    std::vector<Piece*>* _piecesList = NULL;
+    const RectangleZone _playZone;
+    std::vector<Piece> _piecesList;
     
 };
     
-
 #endif /* board_hpp */
