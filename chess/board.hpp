@@ -15,22 +15,22 @@
 
 class Board {
 public:
-    Board() : _playZone (RectangleZone(8,8)) {}
+    Board() {}
     Board(const Board&) = delete;
     Board(Board&&) = delete;
     Board& operator=( const Board&) = delete;
     Board& operator=(Board&&) = delete;
     ~Board() {}
     
-    std::vector<Piece>& getPiecesList() { return _piecesList; }
+    std::vector<Piece *>& getPiecesList() { return _piecesList; }
     bool addToPiecesList(Piece piece);
     bool deletInPiecesList(Piece piece);
     
     bool onValidePosition(const Point& point, bool teamColor, bool enemy_necessary = false);
     
 private:
-    const RectangleZone _playZone;
-    std::vector<Piece> _piecesList;
+    const RectangleZone _playZone = RectangleZone(8,8);
+    std::vector<Piece *> _piecesList;
     
 };
     

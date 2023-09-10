@@ -17,11 +17,7 @@ class Board;
 
 class Piece {
 public:
-    Piece(Point& position, bool teamColor, std::string& name) : _position(position), _name(name), _teamColor(teamColor) {}
-    Piece(const Piece&) = delete;
-    Piece(Piece&&) = delete;
-    Piece& operator=( const Piece&) = delete;
-    Piece& operator=(Piece&&) = delete;
+    Piece(Point& position, bool teamColor, std::string name = "piece") : _position(position), _name(name), _teamColor(teamColor) {}
     ~Piece(){}
     
     bool getTeamColor() const { return _teamColor; }
@@ -61,7 +57,7 @@ inline bool operator==(const Piece& a,const Piece& b)
 //*****************
 class Pawn : public Piece {
 public:
-    Pawn();
+    Pawn(Point& position, bool teamColor) : Piece(position,teamColor,"pawn") {}
     Pawn(const Pawn&) = delete;
     Pawn(Pawn&&) = delete;
     Pawn& operator=( const Pawn&) = delete;
@@ -73,7 +69,7 @@ public:
 
 class Knights : public Piece {
 public:
-    Knights();
+    Knights(Point& position, bool teamColor) : Piece(position,teamColor,"knights") {}
     Knights(const Knights&) = delete;
     Knights(Knights&&) = delete;
     Knights& operator=( const Knights&) = delete;
@@ -85,7 +81,7 @@ public:
 
 class Bishops : public Piece {
 public:
-    Bishops();
+    Bishops(Point& position, bool teamColor) : Piece(position,teamColor,"bishops") {}
     Bishops(const Bishops&) = delete;
     Bishops(Bishops&&) = delete;
     Bishops& operator=( const Bishops&) = delete;
@@ -97,7 +93,7 @@ public:
 
 class Rooks : public Piece {
 public:
-    Rooks();
+    Rooks(Point& position, bool teamColor) : Piece(position,teamColor,"rooks") {}
     Rooks(const Rooks&) = delete;
     Rooks(Rooks&&) = delete;
     Rooks& operator=( const Rooks&) = delete;
@@ -109,7 +105,7 @@ public:
 
 class Queen : public Piece {
 public:
-    Queen();
+    Queen(Point& position, bool teamColor) : Piece(position,teamColor,"queen") {}
     Queen(const Queen&) = delete;
     Queen(Queen&&) = delete;
     Queen& operator=( const Queen&) = delete;
@@ -121,7 +117,7 @@ public:
 
 class King : public Piece {
 public:
-    King();
+    King(Point& position, bool teamColor) : Piece(position,teamColor,"king") {}
     King(const King&) = delete;
     King(King&&) = delete;
     King& operator=( const King&) = delete;

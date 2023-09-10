@@ -28,7 +28,7 @@ void Pawn::updatePossibleMove(Board& board) {
     // straigh +1
     Point* point = new Point(this->getPosition().getX(), this->getPosition().getY() + i);
     
-    if(board.onValidePosition(*point, this->getTeamColor())) {
+    /*if(board.onValidePosition(*point, this->getTeamColor())) {
         _possibleMove.push_back(point);
         precMovePossible = true;
     }
@@ -49,7 +49,7 @@ void Pawn::updatePossibleMove(Board& board) {
         else {
             delete point;
         }
-    }
+    }*/
     
     //diagonal #1
     
