@@ -10,7 +10,7 @@
 // return false when the piece was not added to the board
 bool Board::addToPiecesList(Piece piece) {
     std::vector<Piece *>::iterator it;
-    for(it = _piecesList.begin(); it != _piecesList.end(); it++);
+    for(it = _piecesList.begin(); it != _piecesList.end(); it++)
         if( (*it)->getPosition() == piece.getPosition()) {
             return false; // a piece already exist at this position
         }
@@ -42,6 +42,25 @@ bool Board::onValidePosition(const Point& point, bool teamColor, bool enemy_nece
                 return false;
             return true;
         }
-    return true;
+    return !enemy_necessary;
+}
+
+bool Board::onValidePosition_specialMove_pawn(const Point& point, bool teamColor) {
+    if (! _playZone.inZone(point))
+       return false;
+    
+    std::vector<Piece *>::iterator it;
+    for(it = _piecesList.begin(); it != _piecesList.end(); it++)
+        if( (*it)->getPosition() == point) {
+            if((*it)->getTeamColor() == teamColor)
+                return false;
+            
+            Pawn* pawn = reinterpret_cast<Pawn*>(*it);
+            if(pawn && pawn->_didSpecialMoveLastTurn)
+                return true;
+            
+            return false;
+        }
+    return false;
 }
 

@@ -17,7 +17,7 @@
 //*****************
 class Point {
 public:
-    Point(int32_t x, int32_t y) : _x(x), _y(y) {}
+    Point(int32_t x = 0, int32_t y = 0) : _x(x), _y(y) {}
     Point(const Point&) = default;
     Point(Point&&) = default;
     Point & operator=( const Point&) = default;

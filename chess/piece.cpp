@@ -10,239 +10,266 @@
 #include <functional>
 #include "board.hpp"
 
-/*
- * PAWN MOVES
- */
-
 void Pawn::updatePossibleMove(Board& board) {
-    
-    //TODO : delete possible move list.
-    
     int8_t i = -1;
-    bool precMovePossible;
-    
-    
+    bool precMovePossible = false;
+    _possibleMove.clear();
     if(this->getTeamColor())
-        i= 1;
+        i = 1;
     
     // straigh +1
-    Point* point = new Point(this->getPosition().getX(), this->getPosition().getY() + i);
-    
-    /*if(board.onValidePosition(*point, this->getTeamColor())) {
-        _possibleMove.push_back(point);
+    Point point(this->getPosition().getX(), this->getPosition().getY()+i);
+    if(board.onValidePosition(point, this->getTeamColor())) {
+        _possibleMove.push_back(std::make_pair(point,NA));
         precMovePossible = true;
     }
-    else {
-        precMovePossible = false;
-        delete point;
-    }
-    
     
     // starting straigh +2
-    if(!this->getMoved() && precMovePossible) {
-        
-        Point* point = new Point(this->getPosition().getX(), this->getPosition().getY() + i*2);
-
-        if(board.onValidePosition(*point, this->getTeamColor())) {
-            _possibleMove.push_back(point);
-        }
-        else {
-            delete point;
-        }
-    }*/
+    if(precMovePossible && !this->getMoved()) { // cannot do straigh +2 if straigh +1 is not possible
+        point.updatePosition(this->getPosition().getX(), this->getPosition().getY()+i*2);
+        if(board.onValidePosition(point, this->getTeamColor()))
+            _possibleMove.push_back(std::make_pair(point,PAWN));
+    }
     
     //diagonal #1
+    point.updatePosition(this->getPosition().getX()+i, this->getPosition().getY()+i);
+    Point point2(this->getPosition().getX()+i, this->getPosition().getY());
+    if(board.onValidePosition(point, this->getTeamColor(),true) || board.onValidePosition_specialMove_pawn(point2, this->getTeamColor()))// if the adversary pawn did move two cases last turn, you can eat him as if he add moved only a case
+        _possibleMove.push_back(std::make_pair(point,NA));
     
     //diagonal #2
-    
+    point.updatePosition(this->getPosition().getX()-i, this->getPosition().getY()+i);
+    point2.updatePosition(this->getPosition().getX()-i, this->getPosition().getY());
+    if(board.onValidePosition(point, this->getTeamColor(),true)  || board.onValidePosition_specialMove_pawn(point2, this->getTeamColor()))// if the adversary pawn did move two cases last turn, you can eat him as if he add moved only a case
+        _possibleMove.push_back(std::make_pair(point,NA));
 }
 
-/*void f(){
+void Knight::updatePossibleMove(Board& board) {
+    _possibleMove.clear();
+    
+    Point point(this->getPosition().getX()-2, this->getPosition().getY()+1);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    point.updatePosition(this->getPosition().getX()-2, this->getPosition().getY()-1);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    
+    point.updatePosition(this->getPosition().getX()+2, this->getPosition().getY()+1);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    point = Point(this->getPosition().getX()+2, this->getPosition().getY()- 1);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    
+    point.updatePosition(this->getPosition().getX()+1, this->getPosition().getY()-2);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    point = Point(this->getPosition().getX()-1, this->getPosition().getY()-2);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    
+    point.updatePosition(this->getPosition().getX()+1, this->getPosition().getY()+2);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    point = Point(this->getPosition().getX()-1, this->getPosition().getY()+2);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+}
 
-    /*
-     * PAWN MOVES
+void Bishop::updatePossibleMove(Board& board) {
+    bool precMovePossible = true;
+    _possibleMove.clear();
+    Point point;
+    short i;
     
-    std::vector<std::function<std::unique_ptr<Point>(Piece&/*, int)>>  pawnMoves;
-    // straigh +1
-    pawnMoves.push_back(
-    [](Piece& p/*,Board &b) {
-        std::unique_ptr<Point> point( new Point(p.getPosition().getX(),p.getTeamColor()?
-                                  ( p.getPosition().getY() + 1 ): (p.getPosition().getY() - 1)));
-        if(false)// !Board.validstraightmove(point,p.getTeamColor())
-            point = nullptr;
-        return point;});
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()+i, this->getPosition().getY()+i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
     
-    // starting straigh +2
-    pawnMoves.push_back([](Piece &p/*,Board &b) {
-        std::unique_ptr<Point> point( new Point(p.getPosition().getX(),p.getTeamColor()?
-                                                ( p.getPosition().getY() + 2 ): (p.getPosition().getY() - 2)));
-        if(false)// p.getMoved() /*already moved || !Board.validstraightmove(point,p.getTeamColor())
-            point=nullptr;
-        return point;});
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()-i, this->getPosition().getY()+i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
     
-    //diagonal #1
-    pawnMoves.push_back([](Piece &p/*,Board &b) {
-        std::unique_ptr<Point> point( p.getTeamColor()?
-                                     new Point(p.getPosition().getX() + 1 , p.getPosition().getY() + 1):
-                                     new Point(p.getPosition().getX() + 1 , p.getPosition().getY() -1 ));
-        if(false)// !Board.validEatMove(p.getTeamColor())
-            point=nullptr;
-        
-        return point;});
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()-i, this->getPosition().getY()-i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
     
-    //diagonal #2
-    pawnMoves.push_back([](Piece &p/*,Board &b) {
-        std::unique_ptr<Point> point( p.getTeamColor()?
-                                     new Point(p.getPosition().getX() - 1 , p.getPosition().getY() + 1):
-                                     new Point(p.getPosition().getX() - 1 , p.getPosition().getY() -1 ));
-        if(false)// !Board.validEatMove(p.getTeamColor())
-            point=nullptr;
-        
-        return point;});
-    
-    /*
-     * KNIGHTS MOVES
-     
-    std::vector<std::function<std::unique_ptr<Point>(Piece&/*, int)>>  knigthsMoves;
-    
-    int8_t x,y;
-    std::tuple<int8_t, int8_t> pos[8]  = {
-        {-2, -1},{-2, 1},
-        {2, -1},{2, 1},
-        {-1, -2},{1, -2},
-        {-1, 2},{1, 2}};
-    
-    /* the variable x and y are captured by value in the lambda function
-     see the following link for more info: https://learn.microsoft.com/en-us/cpp/cpp/lambda-expressions-in-cpp?view=msvc-170
-     
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()+i, this->getPosition().getY()-i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
+}
 
-    for(uint8_t i=0; i<8; i++)
-    {
-        x = std::get<0>(pos[i]);
-        y = std::get<1>(pos[i]);;
-        
-        knigthsMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX() + x, p.getPosition().getY() + y));
-            if(false)// !Board.validJumpMove(p.getTeamColor())
-                point=nullptr;
-            return point;});
+void Rook::updatePossibleMove(Board& board) {
+    bool precMovePossible = true;
+    _possibleMove.clear();
+    Point point;
+    short i;
+    
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX(), this->getPosition().getY()+i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
     }
     
-    /*
-     * BISHOPS MOVES
-     
-    std::vector<std::function<std::unique_ptr<Point>(Piece&/*, int)>>  bishopsMoves;
-    
-    for(int8_t i=-7; i<8; i++)
-    {
-        if(i == 0)
-            continue;
-        
-        bishopsMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX() + i, p.getPosition().getY() + i));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
-        
-        bishopsMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX() + i, p.getPosition().getY() - i));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX(), this->getPosition().getY()-i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
     }
     
-    /*
-     * ROOKS MOVES
-     
-    std::vector<std::function<std::unique_ptr<Point>(Piece&/*, int*>>  rooksMoves;
-    
-    for(int8_t i=-7; i<8; i++)
-    {
-        if(i == 0)
-            continue;
-        
-        rooksMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX() + i, p.getPosition().getY()));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
-        
-        rooksMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX(), p.getPosition().getY() + i));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
-    }
-    //add kingside castling and queenside castling?
-    
-    /*
-     * QUEEN MOVES
-     
-    std::vector<std::function<std::unique_ptr<Point>(Piece&/*, int)>>  queenMoves;
-    
-    for(int8_t i=-7; i<8; i++)
-    {
-        if(i == 0)
-            continue;
-        
-        queenMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX() + i, p.getPosition().getY()));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
-        
-        queenMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX(), p.getPosition().getY() + i));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
-        
-        queenMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX() + i, p.getPosition().getY() + i));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
-        
-        queenMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX() + i, p.getPosition().getY() - i));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()+i, this->getPosition().getY());
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor()))) {
+            _possibleMove.push_back(std::make_pair(point,NA));
+
+            if(!this->getMoved()) {
+                if(i == 3 && this->getTeamColor())// big castle
+                    _possibleMove.push_back(std::make_pair(point,BIGCASTLE));
+                else if(!this->getMoved() && i == 2)// small castle
+                    _possibleMove.push_back(std::make_pair(point,SMALLCASTLE));
+            }
+        }
     }
     
-    /*
-     * KING MOVES
-     
-    std::vector<std::function<std::unique_ptr<Point>(Piece&/*, int)>>  kingMoves;
-    
-    for(int8_t i=-1; i<2; i++)
-    {
-        if(i == 0)
-            continue;
-        
-        kingMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX() + i, p.getPosition().getY()));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
-        
-        kingMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX(), p.getPosition().getY() + i));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
-        
-        kingMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX() + i, p.getPosition().getY() + i));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
-        
-        kingMoves.push_back([=](Piece &p/*,Board &b) {
-            std::unique_ptr<Point> point(new Point(p.getPosition().getX() + i, p.getPosition().getY() - i));
-            if(false)// !Board.validstraightmove(p.getTeamColor())
-                point=nullptr;
-            return point;});
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()-i, this->getPosition().getY());
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor()))) {
+            _possibleMove.push_back(std::make_pair(point,NA));
+
+            if(!this->getMoved()) {
+                if(i == 3 && !this->getTeamColor())// big castle
+                    _possibleMove.push_back(std::make_pair(point,BIGCASTLE));
+                else if(!this->getMoved() && i == 2)// small castle
+                    _possibleMove.push_back(std::make_pair(point,SMALLCASTLE));
+            }
+        }
     }
-    //add kingside castling and queenside castling?
-}*/
+}
+
+void Queen::updatePossibleMove(Board& board) {
+    bool precMovePossible = true;
+    _possibleMove.clear();
+    Point point;
+    short i;
+    
+    
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()+i, this->getPosition().getY()+i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
+    
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()-i, this->getPosition().getY()+i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
+    
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()-i, this->getPosition().getY()-i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
+    
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()+i, this->getPosition().getY()-i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
+    
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX(), this->getPosition().getY()+i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
+    
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX(), this->getPosition().getY()-i);
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
+    
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()+i, this->getPosition().getY());
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
+    
+    precMovePossible = true;
+    for(i = 1; i < 8 && precMovePossible; i++) {
+        point.updatePosition(this->getPosition().getX()-i, this->getPosition().getY());
+        if((precMovePossible = board.onValidePosition(point, this->getTeamColor())))
+            _possibleMove.push_back(std::make_pair(point,NA));
+    }
+}
+
+void King::updatePossibleMove(Board& board) {
+    _possibleMove.clear();
+    
+    Point point(this->getPosition().getX()+1, this->getPosition().getY()+1);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+
+    point.updatePosition(this->getPosition().getX()-1, this->getPosition().getY()+1);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    
+    point.updatePosition(this->getPosition().getX()+1, this->getPosition().getY()-1);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    
+    point.updatePosition(this->getPosition().getX()-1, this->getPosition().getY()-1);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    
+    point.updatePosition(this->getPosition().getX(), this->getPosition().getY()+1);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+
+    point.updatePosition(this->getPosition().getX(), this->getPosition().getY()-1);
+    if(board.onValidePosition(point, this->getTeamColor()))
+        _possibleMove.push_back(std::make_pair(point,NA));
+    
+    point.updatePosition(this->getPosition().getX()+1, this->getPosition().getY());
+    if(board.onValidePosition(point, this->getTeamColor()))
+    {
+        _possibleMove.push_back(std::make_pair(point,NA));
+        if(this->getMoved()) {
+            if(this->getTeamColor())
+                _possibleMove.push_back(std::make_pair(point,SMALLCASTLE));
+            else
+                _possibleMove.push_back(std::make_pair(point,BIGCASTLE));
+        }
+    }
+    
+    point.updatePosition(this->getPosition().getX()-1, this->getPosition().getY());
+    if(board.onValidePosition(point, this->getTeamColor()))
+    {
+        _possibleMove.push_back(std::make_pair(point,NA));
+        if(this->getMoved()) {
+            if(this->getTeamColor())
+                _possibleMove.push_back(std::make_pair(point,BIGCASTLE));
+            else
+                _possibleMove.push_back(std::make_pair(point,SMALLCASTLE));
+        }
+    }
+}

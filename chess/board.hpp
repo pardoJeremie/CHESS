@@ -27,6 +27,7 @@ public:
     bool deletInPiecesList(Piece piece);
     
     bool onValidePosition(const Point& point, bool teamColor, bool enemy_necessary = false);
+    bool onValidePosition_specialMove_pawn(const Point& point, bool teamColor);
     
 private:
     const RectangleZone _playZone = RectangleZone(8,8);
