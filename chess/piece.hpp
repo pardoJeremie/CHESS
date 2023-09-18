@@ -19,7 +19,8 @@ enum EnumSpecialMove : short { NA, PAWN, BIGCASTLE, SMALLCASTLE};
 class Piece {
 public:
     Piece(Point& position, bool teamColor, std::string name = "piece") : _position(position), _name(name), _teamColor(teamColor) {}
-    Piece(const Piece&) = delete;
+    //Piece(const Piece& p) : _position(p._position), _name(p._name), _teamColor(p._teamColor) {}
+    Piece(const Piece& p) = delete;
     Piece(Piece&&) = delete;
     Piece& operator=( const Piece&) = delete;
     Piece& operator=(Piece&&) = delete;
@@ -31,14 +32,14 @@ public:
 
     bool getMoved() const { return _moved; }
     
-    
     const Point& getPosition() const { return _position; }
+    
     void setPosition(const Point& position) {
         _position = position;
         _moved = true;
     }
     
-    virtual void updatePossibleMove(Board* board) = 0;
+    virtual void updatePossibleMove(Board& board) = 0;
     const std::vector<std::pair <Point,EnumSpecialMove>>& getPossibleMove() const { return _possibleMove; } // utiliser plutot un vecteur de pair {Point point,bool isspecialmove}
     
 protected:

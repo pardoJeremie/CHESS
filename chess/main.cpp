@@ -6,9 +6,12 @@
 //
 
 #include <iostream>
+#include "chess.hpp"
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-    std::cout << "\x1b[32;40m Hello, World!\x1b[m \n";
+    Chess game;
+    game.startNewGame();
+    game.printBoard();
     return 0;
 }

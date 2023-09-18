@@ -23,8 +23,10 @@ public:
     ~Board() {}
     
     std::vector<Piece *>& getPiecesList() { return _piecesList; }
-    bool addToPiecesList(Piece piece);
-    bool deletInPiecesList(Piece piece);
+    bool addToPiecesList(Piece* piece);
+    bool deletInPiecesList(Piece* piece);
+    void resetPiecesList() { _piecesList.clear(); }
+    // bool deletInPiecesList(Point point);
     
     bool onValidePosition(const Point& point, bool teamColor, bool enemy_necessary = false);
     bool onValidePosition_specialMove_pawn(const Point& point, bool teamColor);
