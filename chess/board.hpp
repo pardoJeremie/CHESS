@@ -13,6 +13,7 @@
 #include <memory>
 #include "piece.hpp"
 
+enum EnumEndCondition : short { NO_END_COND, NO_END_COND_BUT_CHECK, STALEMATE, CHECKMAT};
 class Board {
 public:
     Board() {}
@@ -29,13 +30,16 @@ public:
     // bool deletInPiecesList(Point point);
     
     bool onValidePosition(const Point& point, const bool teamColor, const bool enemy_necessary = false);
+    bool getLastValidePositionPresPiece() {return lastValidePositionPresPiece;}
     bool onValidePosition_specialMove_pawn(const Point& point, const bool teamColor);
     bool KingPositionInCheck(const Point& point, const bool teamColor);
     void updatePiecesMoves();
+    EnumEndCondition returnEndCondition(const bool teamColor);
     
     Piece* returnPiece( const char x, const char y, const bool teamColor);
 
 private:
+    bool lastValidePositionPresPiece = false;
     const RectangleZone _playZone = RectangleZone(8,8);
     std::vector<Piece *> _piecesList;
     

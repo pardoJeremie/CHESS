@@ -42,8 +42,10 @@ bool Board::onValidePosition(const Point& point, const bool teamColor, const boo
         if( (*it)->getPosition() == point) {
             if((*it)->getTeamColor() == teamColor)
                 return false;
+            lastValidePositionPresPiece = true;
             return true;
         }
+    lastValidePositionPresPiece = false;
     return !enemy_necessary;
 }
 
@@ -73,9 +75,9 @@ bool Board::KingPositionInCheck(const Point& point,const bool teamColor) { // al
     for(it = _piecesList.begin(); it != _piecesList.end(); it++) {
         if((*it)->getTeamColor() != teamColor) {
             King* king = dynamic_cast<King*>(*it);
-            if(king) { // have sence if testing for a possible king move
+            if(king) { // A king cannot itself directly check the opposing king, since this would place the first king in check as well!
                 if( (king->getPosition().getX() == point.getX() || king->getPosition().getX() == point.getX()+1 || king->getPosition().getX() == point.getX()-1) && (king->getPosition().getY() == point.getY() || king->getPosition().getY() == point.getY()+1 || king->getPosition().getY() == point.getY()-1))
-                    return true; //A king cannot itself directly check the opposing king, since this would place the first king in check as well!
+                    return true;
             }
             else {
                 std::vector<std::pair <Point,EnumSpecialMove>>::const_iterator itMoves;
@@ -136,4 +138,24 @@ Piece* Board::returnPiece(const char x,const char y, const bool teamColor) {
             }
         }
     return nullptr;
+}
+
+EnumEndCondition Board::returnEndCondition(const bool teamColor) {
+    bool isempty = true, ischeck = false;
+    std::vector<Piece *>::iterator it;
+    for(it = _piecesList.begin(); it != _piecesList.end(); it++)
+        if((*it)->getTeamColor() == teamColor) {
+            isempty = isempty && (*it)->getPossibleMoves().empty();
+
+            King* king = dynamic_cast<King*>(*it);
+            if(king && (ischeck = king->_ischeck))
+                if(king->_ischeckTwoTurn)
+                    return CHECKMAT;
+        }
+    
+    if( isempty)
+        return ischeck? CHECKMAT : STALEMATE;
+    else if (ischeck)
+        return NO_END_COND_BUT_CHECK;
+    return NO_END_COND;
 }

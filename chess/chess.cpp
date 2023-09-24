@@ -85,7 +85,7 @@ void Chess::startNewGame() {
     Point p(0,1);
     _board.addToPiecesList(new Pawn(p,false));
     p.updatePosition(1, 1);
-    _board.addToPiecesList(new Pawn(p,false));
+   /* _board.addToPiecesList(new Pawn(p,false));
     p.updatePosition(2, 1);
     _board.addToPiecesList(new Pawn(p,false));
     p.updatePosition(3, 1);
@@ -122,7 +122,7 @@ void Chess::startNewGame() {
     p.updatePosition(2, 6);
     _board.addToPiecesList(new Pawn(p,true));
     p.updatePosition(3, 6);
-    _board.addToPiecesList(new Pawn(p,true));
+   // _board.addToPiecesList(new Pawn(p,true));
     p.updatePosition(4, 6);
     _board.addToPiecesList(new Pawn(p,true));
     p.updatePosition(5, 6);
@@ -137,22 +137,22 @@ void Chess::startNewGame() {
     p.updatePosition(1, 7);
     _board.addToPiecesList(new Knight(p,true));
     p.updatePosition(2, 7);
-    _board.addToPiecesList(new Bishop(p,true));
+    _board.addToPiecesList(new Bishop(p,true));*/
     p.updatePosition(3, 7);
     _board.addToPiecesList(new Queen(p,true));
-    p.updatePosition(5, 7);
+   /* p.updatePosition(5, 7);
     _board.addToPiecesList(new Bishop(p,true));
     p.updatePosition(6, 7);
     _board.addToPiecesList(new Knight(p,true));
     p.updatePosition(7, 7);
-    _board.addToPiecesList(new Rook(p,true));
+    _board.addToPiecesList(new Rook(p,true));*/
     
     
     //kings added last to allway be last in the vector  (king possible move calcultation must be donne last)
     p.updatePosition(4, 0);
     _board.addToPiecesList(new King(p,false));
-    p.updatePosition(4, 7);
-    _board.addToPiecesList(new King(p,true));
+   /* p.updatePosition(4, 7);
+    _board.addToPiecesList(new King(p,true));*/
     
     turn = true; // white start
     
@@ -165,18 +165,31 @@ bool Chess::playturn() {
    /* (Qu to quit)*/
     _board.updatePiecesMoves();
     
-    std::cout << (turn ?"UperCases (white)":"LowerCases (Black)") << " turn to play" << std::endl;
+    // loock for end condition
+    EnumEndCondition v = _board.returnEndCondition(turn);
+    if(v == NO_END_COND_BUT_CHECK)
+        std::cout <<"\n- "<< (turn ?"UperCases(white)":"LowerCases(Black)") << "king is CHECK -\n";
+    else if(_board.returnEndCondition(!turn) == CHECKMAT) {
+        std::cout <<"\n***- "<< (!turn ?"UperCases(white)":"LowerCases(Black)") << " king is CHECKMAT," << (turn ?"UperCases (white)":"LowerCases (Black)") << " WIN the game -***\n\n";
+        return false;
+    }
+    else if(v == STALEMATE) {
+        std::cout << "\n***- " <<(turn ?"UperCases(white)":"LowerCases(Black)") << " cannot move any piece, DRAW by stalemate -***\n\n";
+        return false;
+    }
+    
+    std::cout <<"\n"<< (turn ?"UperCases(white)":"LowerCases(Black)") << " turn to play" << std::endl;
     
     while(true) {
         printBoard();
         std::cout << "(GU to give up, Sa to save the game)\nType the piece position:" << std::endl;
         std::cin >> x >> y;
         if(x == 'G' && y == 'U') {
-            std::cout <<"\n ***- " << (!turn ?"UperCases (white)":"LowerCases (Black)") << " WIN the game -***\n\n ";
+            std::cout <<"\n***- " << (!turn ?"UperCases(white)":"LowerCases(Black)") << " WIN the game -***\n\n";
             return false;
         }
         else if(x == 'S' && y == 'a') {
-            std::cout << "game save"<< std::endl;
+            std::cout << "\n***- game save -***\n\n"<< std::endl;
             // to implement
             return false;
         }
@@ -190,7 +203,7 @@ bool Chess::playturn() {
         std::cin >> x >> y;
         
         if(x == 'G' && y == 'U') {
-            std::cout <<"\n ***- " << (!turn ?"UperCases (white)":"LowerCases (Black)") << " WIN the game -***\n\n ";
+            std::cout <<"\n***- " << (!turn ?"UperCases(white)":"LowerCases(Black)") << " WIN the game -***\n\n";
             return false;
         }
         else if(piece->applyMove(x,y,_board)) // move impossible, // wrong input

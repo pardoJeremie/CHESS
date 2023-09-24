@@ -112,7 +112,8 @@ public:
 
     void updatePossibleMove(Board& board);
 
-    bool ischeck=false;
+    bool _ischeck=false;
+    bool _ischeckTwoTurn=false;
 };
 
 #endif /* piece_hpp */
