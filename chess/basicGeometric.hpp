@@ -68,7 +68,7 @@ public:
 
     // if _w = 0 or _l = 0, the zone cannot contain any Point
     bool inZone(const Point& point) const {
-        return _leftMostPoint.getY() >= point.getY()  && (_leftMostPoint.getY()+ _w - 1) <= point.getY() && _leftMostPoint.getX() >= point.getX()  && (_leftMostPoint.getX() + _l - 1) <= point.getX();
+        return _leftMostPoint.getY() <= point.getY()  && (_leftMostPoint.getY()+ _w - 1) >= point.getY() && _leftMostPoint.getX() <= point.getX()  && (_leftMostPoint.getX() + _l - 1) >= point.getX();
     }
 private:
     uint16_t _w; // width

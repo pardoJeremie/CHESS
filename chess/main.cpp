@@ -6,12 +6,16 @@
 //
 
 #include <iostream>
+
 #include "chess.hpp"
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
+    /* not implemented :
+     - Threefold Repetition
+     - checkmat because the program calculated that no movement could alter the check
+     */
     Chess game;
     game.startNewGame();
-    game.printBoard();
+    while(game.playturn());
     return 0;
 }

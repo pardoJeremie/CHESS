@@ -14,7 +14,7 @@
 #include "basicGeometric.hpp"
 
 class Board;
-enum EnumSpecialMove : short { NA, PAWN, BIGCASTLE, SMALLCASTLE};
+enum EnumSpecialMove : short { NA, PAWNSPECIAL, PAWNDIAGONAL, BIGCASTLE, SMALLCASTLE};
 
 class Piece {
 public:
@@ -40,7 +40,9 @@ public:
     }
     
     virtual void updatePossibleMove(Board& board) = 0;
-    const std::vector<std::pair <Point,EnumSpecialMove>>& getPossibleMove() const { return _possibleMove; } // utiliser plutot un vecteur de pair {Point point,bool isspecialmove}
+    const std::vector<std::pair <Point,EnumSpecialMove>>& getPossibleMoves() const { return _possibleMove; }
+    
+    bool applyMove(const char x, const char y, Board& board);
     
 protected:
     std::vector<std::pair <Point,EnumSpecialMove>> _possibleMove;
@@ -63,7 +65,7 @@ inline bool operator==(const Piece& a,const Piece& b)
 //*****************
 class Pawn : public Piece {
 public:
-    Pawn(Point& position, bool teamColor) : Piece(position,teamColor,"pawn") {}
+    Pawn(Point& position, bool teamColor) : Piece(position,teamColor,"PAWN") {}
     ~Pawn(){}
     
     void updatePossibleMove(Board& board);
@@ -73,7 +75,7 @@ public:
 
 class Knight : public Piece {
 public:
-    Knight(Point& position, bool teamColor) : Piece(position,teamColor,"knight") {}
+    Knight(Point& position, bool teamColor) : Piece(position,teamColor,"KNIGHT") {}
     ~Knight(){}
     
     void updatePossibleMove(Board& board);
@@ -81,7 +83,7 @@ public:
 
 class Bishop : public Piece {
 public:
-    Bishop(Point& position, bool teamColor) : Piece(position,teamColor,"bishop") {}
+    Bishop(Point& position, bool teamColor) : Piece(position,teamColor,"BISHOP") {}
     ~Bishop(){}
     
     void updatePossibleMove(Board& board);
@@ -89,7 +91,7 @@ public:
 
 class Rook : public Piece {
 public:
-    Rook(Point& position, bool teamColor) : Piece(position,teamColor,"rook") {}
+    Rook(Point& position, bool teamColor) : Piece(position,teamColor,"ROOK") {}
     ~Rook(){}
     
     void updatePossibleMove(Board& board);
@@ -97,7 +99,7 @@ public:
 
 class Queen : public Piece {
 public:
-    Queen(Point& position, bool teamColor) : Piece(position,teamColor,"queen") {}
+    Queen(Point& position, bool teamColor) : Piece(position,teamColor,"QUEEN") {}
     ~Queen(){}
     
     void updatePossibleMove(Board& board);
@@ -105,10 +107,12 @@ public:
 
 class King : public Piece {
 public:
-    King(Point& position, bool teamColor) : Piece(position,teamColor,"king") {}
+    King(Point& position, bool teamColor) : Piece(position,teamColor,"KING") {}
     ~King(){}
 
     void updatePossibleMove(Board& board);
+
+    bool ischeck=false;
 };
 
 #endif /* piece_hpp */

@@ -28,9 +28,13 @@ public:
     void resetPiecesList() { _piecesList.clear(); }
     // bool deletInPiecesList(Point point);
     
-    bool onValidePosition(const Point& point, bool teamColor, bool enemy_necessary = false);
-    bool onValidePosition_specialMove_pawn(const Point& point, bool teamColor);
+    bool onValidePosition(const Point& point, const bool teamColor, const bool enemy_necessary = false);
+    bool onValidePosition_specialMove_pawn(const Point& point, const bool teamColor);
+    bool KingPositionInCheck(const Point& point, const bool teamColor);
+    void updatePiecesMoves();
     
+    Piece* returnPiece( const char x, const char y, const bool teamColor);
+
 private:
     const RectangleZone _playZone = RectangleZone(8,8);
     std::vector<Piece *> _piecesList;
