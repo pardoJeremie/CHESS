@@ -27,9 +27,11 @@ public:
     void chargeGame(std::string path);
     bool playturn();
     void quit();
+    bool loadGame();
+    bool saveGame();
     
     Board _board;
-    bool turn=true;
+    bool _turn=true;
 };
 
 #endif /* chess_hpp */

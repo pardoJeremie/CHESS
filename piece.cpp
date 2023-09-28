@@ -26,8 +26,7 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
                 std::shared_ptr<Rook> rook =  std::dynamic_pointer_cast<Rook>(piecesharedptr); // if null the opposite piece is a rook
                 
                 //look for the opposite piece
-                std::vector<std::shared_ptr<Piece>>::iterator itpieces;
-                for(itpieces = board.getPiecesList().begin(); itpieces != board.getPiecesList().end(); itpieces++)
+                for(std::vector<std::shared_ptr<Piece>>::iterator itpieces = board.getPiecesList().begin(); itpieces != board.getPiecesList().end(); itpieces++)
                     if((*itpieces)->getTeamColor() == getTeamColor()) {
                         if(!king)
                             king = std::dynamic_pointer_cast<King>(*itpieces);
@@ -60,8 +59,7 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
                 std::shared_ptr<Rook> rook =  std::dynamic_pointer_cast<Rook>(piecesharedptr); // if null the opposite piece is a rook
                     
                 //look for the opposite piece
-                std::vector<std::shared_ptr<Piece>>::iterator itpieces;
-                for(itpieces = board.getPiecesList().begin(); itpieces != board.getPiecesList().end(); itpieces++)
+                for(std::vector<std::shared_ptr<Piece>>::iterator itpieces = board.getPiecesList().begin(); itpieces != board.getPiecesList().end(); itpieces++)
                     if((*itpieces)->getTeamColor() == getTeamColor()) {
                         if(!king)
                             king = std::dynamic_pointer_cast<King>(*itpieces);

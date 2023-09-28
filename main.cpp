@@ -16,6 +16,8 @@ int main(int argc, const char * argv[]) {
      */
     Chess game;
     game.startNewGame();
-    while(game.playturn());
+    game.saveGame();
+    if(game.loadGame())
+        while(game.playturn());
     return 0;
 }

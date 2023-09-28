@@ -18,7 +18,7 @@ enum EnumSpecialMove : short { NA, PAWNSPECIAL, PAWNDIAGONAL, BIGCASTLE, SMALLCA
 
 class Piece {
 public:
-    Piece(Point& position, bool teamColor, std::string name = "piece") : _position(position), _name(name), _teamColor(teamColor) {}
+    Piece(Point& position, bool teamColor, bool moved = false, std::string name = "piece") : _position(position), _moved(moved), _name(name), _teamColor(teamColor) {}
     Piece(const Piece& p) = delete;
     Piece(Piece&&) = delete;
     Piece& operator=( const Piece&) = delete;
@@ -48,7 +48,7 @@ protected:
 
 private:
     Point _position;
-    bool _moved = false;
+    bool _moved;
 
     const std::string _name;
     bool _teamColor; // BLACK = 0, WHITE = 1
@@ -64,17 +64,17 @@ inline bool operator==(const Piece& a,const Piece& b)
 //*****************
 class Pawn : public Piece {
 public:
-    Pawn(Point& position, bool teamColor) : Piece(position,teamColor,"PAWN") {}
+    Pawn(Point& position, bool teamColor, bool moved = false, bool didSpecialMoveLastTurn = false) : Piece(position,teamColor,moved,"PAWN"), _didSpecialMoveLastTurn(didSpecialMoveLastTurn) {}
     ~Pawn(){}
     
     void updatePossibleMove(Board& board);
 
-    bool _didSpecialMoveLastTurn = false; // TO REDO DIFFERENTLY?
+    bool _didSpecialMoveLastTurn; // TO REDO DIFFERENTLY?
 };
 
 class Knight : public Piece {
 public:
-    Knight(Point& position, bool teamColor) : Piece(position,teamColor,"KNIGHT") {}
+    Knight(Point& position, bool teamColor, bool moved = false) : Piece(position,teamColor,moved,"KNIGHT") {}
     ~Knight(){}
     
     void updatePossibleMove(Board& board);
@@ -82,7 +82,7 @@ public:
 
 class Bishop : public Piece {
 public:
-    Bishop(Point& position, bool teamColor) : Piece(position,teamColor,"BISHOP") {}
+    Bishop(Point& position, bool teamColor, bool moved = false) : Piece(position,teamColor,moved,"BISHOP") {}
     ~Bishop(){}
     
     void updatePossibleMove(Board& board);
@@ -90,7 +90,7 @@ public:
 
 class Rook : public Piece {
 public:
-    Rook(Point& position, bool teamColor) : Piece(position,teamColor,"ROOK") {}
+    Rook(Point& position, bool teamColor, bool moved = false) : Piece(position,teamColor,moved,"ROOK") {}
     ~Rook(){}
     
     void updatePossibleMove(Board& board);
@@ -98,7 +98,7 @@ public:
 
 class Queen : public Piece {
 public:
-    Queen(Point& position, bool teamColor) : Piece(position,teamColor,"QUEEN") {}
+    Queen(Point& position, bool teamColor, bool moved = false) : Piece(position,teamColor,moved,"QUEEN") {}
     ~Queen(){}
     
     void updatePossibleMove(Board& board);
@@ -106,7 +106,7 @@ public:
 
 class King : public Piece {
 public:
-    King(Point& position, bool teamColor) : Piece(position,teamColor,"KING") {}
+    King(Point& position, bool teamColor, bool moved = false) : Piece(position,teamColor, moved,"KING") {}
     ~King(){}
 
     void updatePossibleMove(Board& board);
