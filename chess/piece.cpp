@@ -21,17 +21,18 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
         for(it = _possibleMove.begin(); it !=_possibleMove.end(); it ++) {
             if((*it).second == BIGCASTLE) { // if true, the piece is a king or a rook
                
-                King* king = dynamic_cast<King*>(this); // if null the opposite piece is a king
-                Rook* rook = dynamic_cast<Rook*>(this); // if null the opposite piece is a rook
+                std::shared_ptr<Piece> piecesharedptr(this);
+                std::shared_ptr<King> king =  std::dynamic_pointer_cast<King>(piecesharedptr); // if null the opposite piece is a king
+                std::shared_ptr<Rook> rook =  std::dynamic_pointer_cast<Rook>(piecesharedptr); // if null the opposite piece is a rook
                 
                 //look for the opposite piece
-                std::vector<Piece *>::iterator itpieces;
+                std::vector<std::shared_ptr<Piece>>::iterator itpieces;
                 for(itpieces = board.getPiecesList().begin(); itpieces != board.getPiecesList().end(); itpieces++)
                     if((*itpieces)->getTeamColor() == getTeamColor()) {
                         if(!king)
-                            king = dynamic_cast<King*>(*itpieces);
+                            king = std::dynamic_pointer_cast<King>(*itpieces);
                         else if (!rook)
-                            rook = dynamic_cast<Rook*>(*itpieces);
+                            rook = std::dynamic_pointer_cast<Rook>(*itpieces);
                         
                         if(king && rook) { // the rook/king pair is found
                             std::vector<std::pair <Point,EnumSpecialMove>>::const_iterator itpiecePossibleMoves;
@@ -54,28 +55,29 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
             if((*it).second == SMALLCASTLE) {
                 // if true, the piece is a king or a rook
                    
-                    King* king = dynamic_cast<King*>(this); // if null the opposite piece is a king
-                    Rook* rook = dynamic_cast<Rook*>(this); // if null the opposite piece is a rook
+                std::shared_ptr<Piece> piecesharedptr(this);
+                std::shared_ptr<King> king =  std::dynamic_pointer_cast<King>(piecesharedptr); // if null the opposite piece is a king
+                std::shared_ptr<Rook> rook =  std::dynamic_pointer_cast<Rook>(piecesharedptr); // if null the opposite piece is a rook
                     
-                    //look for the opposite piece
-                    std::vector<Piece *>::iterator itpieces;
-                    for(itpieces = board.getPiecesList().begin(); itpieces != board.getPiecesList().end(); itpieces++)
-                        if((*itpieces)->getTeamColor() == getTeamColor()) {
-                            if(!king)
-                                king = dynamic_cast<King*>(*itpieces);
-                            else if (!rook)
-                                rook = dynamic_cast<Rook*>(*itpieces);
-                            
-                            if(king && rook) { // the rook/king pair is found
-                                std::vector<std::pair <Point,EnumSpecialMove>>::const_iterator itpiecePossibleMoves;
-                                for(itpiecePossibleMoves = (*itpieces)->getPossibleMoves().begin(); itpiecePossibleMoves !=(*itpieces)->getPossibleMoves().end(); itpiecePossibleMoves ++)
-                                    if((*itpiecePossibleMoves).second == SMALLCASTLE) {
-                                        setPosition((*it).first);
-                                        (*itpieces)->setPosition((*itpiecePossibleMoves).first);
-                                        return true;
-                                    }
-                            }
+                //look for the opposite piece
+                std::vector<std::shared_ptr<Piece>>::iterator itpieces;
+                for(itpieces = board.getPiecesList().begin(); itpieces != board.getPiecesList().end(); itpieces++)
+                    if((*itpieces)->getTeamColor() == getTeamColor()) {
+                        if(!king)
+                            king = std::dynamic_pointer_cast<King>(*itpieces);
+                        else if (!rook)
+                            rook = std::dynamic_pointer_cast<Rook>(*itpieces);
+                        
+                        if(king && rook) { // the rook/king pair is found
+                            std::vector<std::pair <Point,EnumSpecialMove>>::const_iterator itpiecePossibleMoves;
+                            for(itpiecePossibleMoves = (*itpieces)->getPossibleMoves().begin(); itpiecePossibleMoves !=(*itpieces)->getPossibleMoves().end(); itpiecePossibleMoves ++)
+                                if((*itpiecePossibleMoves).second == SMALLCASTLE) {
+                                    setPosition((*it).first);
+                                    (*itpieces)->setPosition((*itpiecePossibleMoves).first);
+                                    return true;
+                                }
                         }
+                    }
             }
         }
         std::cout << "\nMove not possible." << std::endl;
@@ -129,10 +131,10 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
                 setPosition(point);
                 
                 // case where a pawn eat diagonaly another pawn that did its special move
-                std::vector<Piece *>::iterator itpieces;
+                std::vector<std::shared_ptr<Piece>>::iterator itpieces;
                 for(itpieces = board.getPiecesList().begin(); itpieces != board.getPiecesList().end(); itpieces++)
                     if((*itpieces)->getTeamColor() != getTeamColor() && (*itpieces)->getPosition().getY() == point.getY() + (_teamColor? 1 : -1) && (*itpieces)->getPosition().getX() == point.getX()) {
-                        Pawn* pawntodelete = dynamic_cast<Pawn*>(*itpieces);
+                        std::shared_ptr<Pawn> pawntodelete = std::dynamic_pointer_cast<Pawn>(*itpieces);
 
                         if(pawntodelete && pawntodelete->_didSpecialMoveLastTurn) {
                             board.getPiecesList().erase(itpieces);
@@ -145,7 +147,7 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
         }
         
         if(possible) {
-            std::vector<Piece *>::iterator itpieces;
+            std::vector<std::shared_ptr<Piece>>::iterator itpieces;
             for(itpieces = board.getPiecesList().begin(); itpieces != board.getPiecesList().end(); itpieces++)
                 if((*itpieces)->getTeamColor() != getTeamColor() && (*itpieces)->getPosition() == point) {
                     board.getPiecesList().erase(itpieces);

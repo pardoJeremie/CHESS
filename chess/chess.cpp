@@ -23,76 +23,76 @@ void Chess::startNewGame() {
     
     // Black\LowerCase
     Point p(0,1);
-    _board.addToPiecesList(new Pawn(p,false));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,false));
     p.updatePosition(1, 1);
-    _board.addToPiecesList(new Pawn(p,false));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,false));
     p.updatePosition(2, 1);
-    _board.addToPiecesList(new Pawn(p,false));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,false));
     p.updatePosition(3, 1);
-    _board.addToPiecesList(new Pawn(p,false));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,false));
     p.updatePosition(4, 1);
-    _board.addToPiecesList(new Pawn(p,false));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,false));
     p.updatePosition(5, 1);
-    _board.addToPiecesList(new Pawn(p,false));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,false));
     p.updatePosition(6, 1);
-    _board.addToPiecesList(new Pawn(p,false));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,false));
     p.updatePosition(7, 1);
-    _board.addToPiecesList(new Pawn(p,false));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,false));
     
     p.updatePosition(0, 0);
-    _board.addToPiecesList(new Rook(p,false));
+    _board.addToPiecesList(std::make_shared<Rook>(p,false));
     p.updatePosition(1, 0);
-    _board.addToPiecesList(new Knight(p,false));
+    _board.addToPiecesList(std::make_shared<Knight>(p,false));
     p.updatePosition(2, 0);
-    _board.addToPiecesList(new Bishop(p,false));
+    _board.addToPiecesList(std::make_shared<Bishop>(p,false));
     p.updatePosition(3, 0);
-    _board.addToPiecesList(new Queen(p,false));
+    _board.addToPiecesList(std::make_shared<Queen>(p,false));
     p.updatePosition(5, 0);
-    _board.addToPiecesList(new Bishop(p,false));
+    _board.addToPiecesList(std::make_shared<Bishop>(p,false));
     p.updatePosition(6, 0);
-    _board.addToPiecesList(new Knight(p,false));
+    _board.addToPiecesList(std::make_shared<Knight>(p,false));
     p.updatePosition(7, 0);
-    _board.addToPiecesList(new Rook(p,false));
+    _board.addToPiecesList(std::make_shared<Rook>(p,false));
     
     // White\UperCase
     p.updatePosition(0, 6);
-    _board.addToPiecesList(new Pawn(p,true));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,true));
     p.updatePosition(1, 6);
-    _board.addToPiecesList(new Pawn(p,true));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,true));
     p.updatePosition(2, 6);
-    _board.addToPiecesList(new Pawn(p,true));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,true));
     p.updatePosition(3, 6);
-    _board.addToPiecesList(new Pawn(p,true));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,true));
     p.updatePosition(4, 6);
-    _board.addToPiecesList(new Pawn(p,true));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,true));
     p.updatePosition(5, 6);
-    _board.addToPiecesList(new Pawn(p,true));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,true));
     p.updatePosition(6, 6);
-    _board.addToPiecesList(new Pawn(p,true));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,true));
     p.updatePosition(7, 6);
-    _board.addToPiecesList(new Pawn(p,true));
+    _board.addToPiecesList(std::make_shared<Pawn>(p,true));
     
     p.updatePosition(0, 7);
-    _board.addToPiecesList(new Rook(p,true));
+    _board.addToPiecesList(std::make_shared<Rook>(p,true));
     p.updatePosition(1, 7);
-    _board.addToPiecesList(new Knight(p,true));
+    _board.addToPiecesList(std::make_shared<Knight>(p,true));
     p.updatePosition(2, 7);
-    _board.addToPiecesList(new Bishop(p,true));
+    _board.addToPiecesList(std::make_shared<Bishop>(p,true));
     p.updatePosition(3, 7);
-    _board.addToPiecesList(new Queen(p,true));
+    _board.addToPiecesList(std::make_shared<Queen>(p,true));
     p.updatePosition(5, 7);
-    _board.addToPiecesList(new Bishop(p,true));
+    _board.addToPiecesList(std::make_shared<Bishop>(p,true));
     p.updatePosition(6, 7);
-    _board.addToPiecesList(new Knight(p,true));
+    _board.addToPiecesList(std::make_shared<Knight>(p,true));
     p.updatePosition(7, 7);
-    _board.addToPiecesList(new Rook(p,true));
+    _board.addToPiecesList(std::make_shared<Rook>(p,true));
     
     
     //kings added last to allway be last in the vector  (king possible move calcultation must be donne last)
     p.updatePosition(4, 0);
-    _board.addToPiecesList(new King(p,false));
+    _board.addToPiecesList(std::make_shared<King>(p,false));
     p.updatePosition(4, 7);
-    _board.addToPiecesList(new King(p,true));
+    _board.addToPiecesList(std::make_shared<King>(p,true));
     
     turn = true; // white start
     
@@ -101,7 +101,7 @@ void Chess::startNewGame() {
 
 bool Chess::playturn() {
     char x, y;
-    Piece* piece;
+    std::shared_ptr<Piece> piece;
    /* (Qu to quit)*/
     _board.updatePiecesMoves();
     

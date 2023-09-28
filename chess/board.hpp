@@ -23,11 +23,9 @@ public:
     Board& operator=(Board&&) = delete;
     ~Board() {}
     
-    std::vector<Piece *>& getPiecesList() { return _piecesList; }
-    bool addToPiecesList(Piece* piece);
-    bool deletInPiecesList(Piece* piece);
+    std::vector<std::shared_ptr<Piece>>& getPiecesList() { return _piecesList; }
+    bool addToPiecesList(std::shared_ptr<Piece> piece);
     void resetPiecesList() { _piecesList.clear(); }
-    // bool deletInPiecesList(Point point);
     
     bool onValidePosition(const Point& point, const bool teamColor, const bool enemy_necessary = false);
     bool onValidePosition(const Point& point); // for pawn because they cannot eat piece when moving forward
@@ -37,13 +35,13 @@ public:
     void updatePiecesMoves();
     void pawnPromotion();
     EnumEndCondition returnEndCondition(const bool teamColor);
-    Piece* returnPiece( const char x, const char y, const bool teamColor);
+    std::shared_ptr<Piece> returnPiece( const char x, const char y, const bool teamColor);
     void printBoard();
 
 private:
     bool lastValidePositionPresPiece = false;
     const RectangleZone _playZone = RectangleZone(8,8);
-    std::vector<Piece *> _piecesList;
+    std::vector<std::shared_ptr<Piece>> _piecesList;
     
 };
 

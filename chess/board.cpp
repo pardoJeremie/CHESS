@@ -10,8 +10,8 @@
 #include "board.hpp"
 
 // return false when the piece was not added to the board
-bool Board::addToPiecesList(Piece* piece) {
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
+bool Board::addToPiecesList(std::shared_ptr<Piece> piece) {
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if( (*it)->getPosition() == piece->getPosition()) {
             return false; // a piece already exist at this position
         }
@@ -20,22 +20,12 @@ bool Board::addToPiecesList(Piece* piece) {
     return true;
 }
 
-// return false when the piece was not on the board
-bool Board::deletInPiecesList(Piece* piece) {
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
-        if( *it == piece) {
-            it = _piecesList.erase(it); // delete piece
-            return true;
-        }
-
-    return false;
-}
 
 bool Board::onValidePosition(const Point& point, const bool teamColor, const bool enemy_necessary) {
     if (! _playZone.inZone(point))
        return false;
     
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if( (*it)->getPosition() == point) {
             if((*it)->getTeamColor() == teamColor)
                 return false;
@@ -50,7 +40,7 @@ bool Board::onValidePosition(const Point& point) {
     if (! _playZone.inZone(point))
        return false;
     
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if( (*it)->getPosition() == point)
             return false;
 
@@ -62,12 +52,12 @@ bool Board::onValidePosition_specialMove_pawn(const Point& point, const bool tea
     if (! _playZone.inZone(point))
        return false;
     
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if( (*it)->getPosition() == point) {
             if((*it)->getTeamColor() == teamColor)
                 return false;
             
-            Pawn* pawn = dynamic_cast<Pawn*>(*it);
+            std::shared_ptr<Pawn> pawn = std::dynamic_pointer_cast<Pawn>(*it);
             if(pawn && pawn->_didSpecialMoveLastTurn)
                 return true;
             
@@ -79,9 +69,9 @@ bool Board::onValidePosition_specialMove_pawn(const Point& point, const bool tea
 // all opponent pieces except king piece must have all thier possible moves already calculated for this fonction to work correctly!!
 bool Board::KingPositionInCheck(const Point& point,const bool teamColor) { // also used to test possible move of a king
 
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++) {
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++) {
         if((*it)->getTeamColor() != teamColor) {
-            King* king = dynamic_cast<King*>(*it);
+            std::shared_ptr<King> king = std::dynamic_pointer_cast<King>(*it);
             if(king) { // A king cannot itself directly check the opposing king, since this would place the first king in check as well!
                 if( (king->getPosition().getX() == point.getX() || king->getPosition().getX() == point.getX()+1 || king->getPosition().getX() == point.getX()-1) && (king->getPosition().getY() == point.getY() || king->getPosition().getY() == point.getY()+1 || king->getPosition().getY() == point.getY()-1))
                     return true;
@@ -96,14 +86,14 @@ bool Board::KingPositionInCheck(const Point& point,const bool teamColor) { // al
     return false;
 }
 void Board::updatePiecesMoves() {
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         (*it)->updatePossibleMove(*this);
 }
 
 void Board::pawnPromotion() {
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++) {
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++) {
         if((*it)->getPosition().getY() == ((*it)->getTeamColor()? 0 : 7)) {
-            Pawn* pawn = dynamic_cast<Pawn*>(*it);
+            std::shared_ptr<Pawn> pawn = std::dynamic_pointer_cast<Pawn>(*it);
             if(pawn) {
                 printBoard();
                 char c;
@@ -114,20 +104,20 @@ void Board::pawnPromotion() {
                     std::cout << "pawn Promotion to (r,n,b,q):" << std::endl;
                     std::cin >> c;
                     if(c == 'R' || c == 'r') {
-                        _piecesList.insert(_piecesList.begin(),new Rook(p,team));
+                        _piecesList.insert(_piecesList.begin(),std::make_shared<Rook>(p,team));
                         break;
                     }
                     else if(c == 'N' || c == 'n') {
-                        _piecesList.insert(_piecesList.begin(),new Knight(p,team));
+                        _piecesList.insert(_piecesList.begin(),std::make_shared<Knight>(p,team));
                         break;
                     }
                     else if(c == 'B' || c == 'b'){
-                            _piecesList.insert(_piecesList.begin(),new Bishop(p,team));
+                            _piecesList.insert(_piecesList.begin(),std::make_shared<Bishop>(p,team));
       
                         break;
                     }
                     else if(c == 'Q' || c == 'q') {
-                        _piecesList.insert(_piecesList.begin(),new Queen(p,team));
+                        _piecesList.insert(_piecesList.begin(),std::make_shared<Queen>(p,team));
                         break;
                     }
                     else
@@ -141,11 +131,11 @@ void Board::pawnPromotion() {
 
 EnumEndCondition Board::returnEndCondition(const bool teamColor) {
     bool isempty = true, ischeck = false;
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if((*it)->getTeamColor() == teamColor) {
             isempty = isempty && (*it)->getPossibleMoves().empty();
 
-            King* king = dynamic_cast<King*>(*it);
+            std::shared_ptr<King> king = std::dynamic_pointer_cast<King>(*it);
             if(king && (ischeck = king->_ischeck))
                 if(king->_ischeckTwoTurn)
                     return CHECKMAT;
@@ -159,7 +149,7 @@ EnumEndCondition Board::returnEndCondition(const bool teamColor) {
 }
 
 
-Piece* Board::returnPiece(const char x,const char y, const bool teamColor) {
+std::shared_ptr<Piece> Board::returnPiece(const char x,const char y, const bool teamColor) {
     
     short varx = -1, vary = -1;
     
@@ -188,7 +178,7 @@ Piece* Board::returnPiece(const char x,const char y, const bool teamColor) {
         return nullptr;
     }
     
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if((*it)->getTeamColor() == teamColor) {
             if((*it)->getPosition().getX() == varx && (*it)->getPosition().getY() == vary) {
                 if((*it)->getPossibleMoves().empty()) {
@@ -213,38 +203,38 @@ void Board::printBoard() {
         {[0 ... 7] = '.'},
         {[0 ... 7] = '.'}};
     
-    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++) {
-        Pawn* pawn = dynamic_cast<Pawn*>(*it);
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++) {
+        std::shared_ptr<Pawn> pawn = std::dynamic_pointer_cast<Pawn>(*it);
         if(pawn) {
             graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'P':'p';
             continue;
         }
         
-        Knight* knight = dynamic_cast<Knight*>(*it);
+        std::shared_ptr<Knight> knight = std::dynamic_pointer_cast<Knight>(*it);
         if(knight) {
             graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'N':'n';
             continue;
         }
             
-        Bishop* bishop = dynamic_cast<Bishop*>(*it);
+        std::shared_ptr<Bishop> bishop = std::dynamic_pointer_cast<Bishop>(*it);
         if(bishop) {
             graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'B':'b';
             continue;
         }
         
-        Rook* rook = dynamic_cast<Rook*>(*it);
+        std::shared_ptr<Rook> rook = std::dynamic_pointer_cast<Rook>(*it);
         if(rook) {
             graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'R':'r';
             continue;
         }
         
-        Queen* queen = dynamic_cast<Queen*>(*it);
+        std::shared_ptr<Queen> queen = std::dynamic_pointer_cast<Queen>(*it);
         if(queen) {
             graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'Q':'q';
             continue;
         }
             
-        King* king = dynamic_cast<King*>(*it);
+        std::shared_ptr<King> king = std::dynamic_pointer_cast<King>(*it);
         if(king) {
             graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'K':'k';
             continue;

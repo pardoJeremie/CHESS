@@ -19,7 +19,6 @@ enum EnumSpecialMove : short { NA, PAWNSPECIAL, PAWNDIAGONAL, BIGCASTLE, SMALLCA
 class Piece {
 public:
     Piece(Point& position, bool teamColor, std::string name = "piece") : _position(position), _name(name), _teamColor(teamColor) {}
-    //Piece(const Piece& p) : _position(p._position), _name(p._name), _teamColor(p._teamColor) {}
     Piece(const Piece& p) = delete;
     Piece(Piece&&) = delete;
     Piece& operator=( const Piece&) = delete;
