@@ -25,7 +25,6 @@ public:
 //private:
     void startNewGame();
     void chargeGame(std::string path);
-    void printBoard();
     bool playturn();
     void quit();
     

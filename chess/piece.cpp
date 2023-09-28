@@ -167,15 +167,15 @@ void Pawn::updatePossibleMove(Board& board) {
     if(!getTeamColor())
         i = 1;
     
-    // straigh +1
+    // straigh +1 attention, pawn cannot eat piece when moving forward
     Point point(getPosition().getX(), getPosition().getY()+i);
-    if((precMovePossible = board.onValidePosition(point, getTeamColor())))
+    if((precMovePossible = board.onValidePosition(point)))
         _possibleMove.push_back(std::make_pair(point,NA));
 
-    // starting straigh +2
+    // starting straigh +2 attention, pawn cannot eat piece when moving forward 
     if(precMovePossible && !board.getLastValidePositionPresPiece() && !getMoved()) { // cannot do straigh +2 if straigh +1 is not possible
         point.updatePosition(getPosition().getX(), getPosition().getY()+i*2);
-        if(board.onValidePosition(point, getTeamColor()))
+        if(board.onValidePosition(point))
             _possibleMove.push_back(std::make_pair(point,PAWNSPECIAL));
     }
     

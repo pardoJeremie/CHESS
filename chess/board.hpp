@@ -30,13 +30,15 @@ public:
     // bool deletInPiecesList(Point point);
     
     bool onValidePosition(const Point& point, const bool teamColor, const bool enemy_necessary = false);
+    bool onValidePosition(const Point& point); // for pawn because they cannot eat piece when moving forward
     bool getLastValidePositionPresPiece() {return lastValidePositionPresPiece;}
     bool onValidePosition_specialMove_pawn(const Point& point, const bool teamColor);
     bool KingPositionInCheck(const Point& point, const bool teamColor);
     void updatePiecesMoves();
+    void pawnPromotion();
     EnumEndCondition returnEndCondition(const bool teamColor);
-    
     Piece* returnPiece( const char x, const char y, const bool teamColor);
+    void printBoard();
 
 private:
     bool lastValidePositionPresPiece = false;
@@ -44,5 +46,5 @@ private:
     std::vector<Piece *> _piecesList;
     
 };
-    
+
 #endif /* board_hpp */

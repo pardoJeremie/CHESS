@@ -11,8 +11,7 @@
 
 // return false when the piece was not added to the board
 bool Board::addToPiecesList(Piece* piece) {
-    std::vector<Piece *>::iterator it;
-    for(it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if( (*it)->getPosition() == piece->getPosition()) {
             return false; // a piece already exist at this position
         }
@@ -23,8 +22,7 @@ bool Board::addToPiecesList(Piece* piece) {
 
 // return false when the piece was not on the board
 bool Board::deletInPiecesList(Piece* piece) {
-    std::vector<Piece * >::iterator it;
-    for(it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if( *it == piece) {
             it = _piecesList.erase(it); // delete piece
             return true;
@@ -37,8 +35,7 @@ bool Board::onValidePosition(const Point& point, const bool teamColor, const boo
     if (! _playZone.inZone(point))
        return false;
     
-    std::vector<Piece *>::iterator it;
-    for(it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if( (*it)->getPosition() == point) {
             if((*it)->getTeamColor() == teamColor)
                 return false;
@@ -49,12 +46,23 @@ bool Board::onValidePosition(const Point& point, const bool teamColor, const boo
     return !enemy_necessary;
 }
 
+bool Board::onValidePosition(const Point& point) {
+    if (! _playZone.inZone(point))
+       return false;
+    
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
+        if( (*it)->getPosition() == point)
+            return false;
+
+    lastValidePositionPresPiece = false; // no valid pos have the presence of a piece in this function.
+    return true;
+}
+
 bool Board::onValidePosition_specialMove_pawn(const Point& point, const bool teamColor) {
     if (! _playZone.inZone(point))
        return false;
     
-    std::vector<Piece *>::iterator it;
-    for(it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if( (*it)->getPosition() == point) {
             if((*it)->getTeamColor() == teamColor)
                 return false;
@@ -71,31 +79,85 @@ bool Board::onValidePosition_specialMove_pawn(const Point& point, const bool tea
 // all opponent pieces except king piece must have all thier possible moves already calculated for this fonction to work correctly!!
 bool Board::KingPositionInCheck(const Point& point,const bool teamColor) { // also used to test possible move of a king
 
-    std::vector<Piece *>::iterator it;
-    for(it = _piecesList.begin(); it != _piecesList.end(); it++) {
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++) {
         if((*it)->getTeamColor() != teamColor) {
             King* king = dynamic_cast<King*>(*it);
             if(king) { // A king cannot itself directly check the opposing king, since this would place the first king in check as well!
                 if( (king->getPosition().getX() == point.getX() || king->getPosition().getX() == point.getX()+1 || king->getPosition().getX() == point.getX()-1) && (king->getPosition().getY() == point.getY() || king->getPosition().getY() == point.getY()+1 || king->getPosition().getY() == point.getY()-1))
                     return true;
             }
-            else {
-                std::vector<std::pair <Point,EnumSpecialMove>>::const_iterator itMoves;
-                for(itMoves = (*it)->getPossibleMoves().begin();itMoves != (*it)->getPossibleMoves().end(); itMoves++){
+            else
+                for(std::vector<std::pair <Point,EnumSpecialMove>>::const_iterator itMoves = (*it)->getPossibleMoves().begin();itMoves != (*it)->getPossibleMoves().end(); itMoves++){
                     if(itMoves->first == point)
                         return true; //check
-                }
             }
         }
     }
     return false;
 }
 void Board::updatePiecesMoves() {
-    std::vector<Piece *>::iterator it;
-    for(it = _piecesList.begin(); it != _piecesList.end(); it++) {
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         (*it)->updatePossibleMove(*this);
+}
+
+void Board::pawnPromotion() {
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++) {
+        if((*it)->getPosition().getY() == ((*it)->getTeamColor()? 0 : 7)) {
+            Pawn* pawn = dynamic_cast<Pawn*>(*it);
+            if(pawn) {
+                printBoard();
+                char c;
+                Point p = (*it)->getPosition();
+                bool team = (*it)->getTeamColor();
+                _piecesList.erase(it);
+                while(true){
+                    std::cout << "pawn Promotion to (r,n,b,q):" << std::endl;
+                    std::cin >> c;
+                    if(c == 'R' || c == 'r') {
+                        _piecesList.insert(_piecesList.begin(),new Rook(p,team));
+                        break;
+                    }
+                    else if(c == 'N' || c == 'n') {
+                        _piecesList.insert(_piecesList.begin(),new Knight(p,team));
+                        break;
+                    }
+                    else if(c == 'B' || c == 'b'){
+                            _piecesList.insert(_piecesList.begin(),new Bishop(p,team));
+      
+                        break;
+                    }
+                    else if(c == 'Q' || c == 'q') {
+                        _piecesList.insert(_piecesList.begin(),new Queen(p,team));
+                        break;
+                    }
+                    else
+                        std::cout << "\nWrong user input." << std::endl;
+                }
+                return; // only one promotation is possible each turn!
+            }
+        }
     }
 }
+
+EnumEndCondition Board::returnEndCondition(const bool teamColor) {
+    bool isempty = true, ischeck = false;
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
+        if((*it)->getTeamColor() == teamColor) {
+            isempty = isempty && (*it)->getPossibleMoves().empty();
+
+            King* king = dynamic_cast<King*>(*it);
+            if(king && (ischeck = king->_ischeck))
+                if(king->_ischeckTwoTurn)
+                    return CHECKMAT;
+        }
+    
+    if( isempty)
+        return ischeck? CHECKMAT : STALEMATE;
+    else if (ischeck)
+        return NO_END_COND_BUT_CHECK;
+    return NO_END_COND;
+}
+
 
 Piece* Board::returnPiece(const char x,const char y, const bool teamColor) {
     
@@ -126,8 +188,7 @@ Piece* Board::returnPiece(const char x,const char y, const bool teamColor) {
         return nullptr;
     }
     
-    std::vector<Piece *>::iterator it;
-    for(it = _piecesList.begin(); it != _piecesList.end(); it++)
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++)
         if((*it)->getTeamColor() == teamColor) {
             if((*it)->getPosition().getX() == varx && (*it)->getPosition().getY() == vary) {
                 if((*it)->getPossibleMoves().empty()) {
@@ -140,22 +201,62 @@ Piece* Board::returnPiece(const char x,const char y, const bool teamColor) {
     return nullptr;
 }
 
-EnumEndCondition Board::returnEndCondition(const bool teamColor) {
-    bool isempty = true, ischeck = false;
-    std::vector<Piece *>::iterator it;
-    for(it = _piecesList.begin(); it != _piecesList.end(); it++)
-        if((*it)->getTeamColor() == teamColor) {
-            isempty = isempty && (*it)->getPossibleMoves().empty();
-
-            King* king = dynamic_cast<King*>(*it);
-            if(king && (ischeck = king->_ischeck))
-                if(king->_ischeckTwoTurn)
-                    return CHECKMAT;
-        }
+void Board::printBoard() {
     
-    if( isempty)
-        return ischeck? CHECKMAT : STALEMATE;
-    else if (ischeck)
-        return NO_END_COND_BUT_CHECK;
-    return NO_END_COND;
+    char graphicboard[8][8] = {
+        {[0 ... 7] = '.'},
+        {[0 ... 7] = '.'},
+        {[0 ... 7] = '.'},
+        {[0 ... 7] = '.'},
+        {[0 ... 7] = '.'},
+        {[0 ... 7] = '.'},
+        {[0 ... 7] = '.'},
+        {[0 ... 7] = '.'}};
+    
+    for(std::vector<Piece *>::iterator it = _piecesList.begin(); it != _piecesList.end(); it++) {
+        Pawn* pawn = dynamic_cast<Pawn*>(*it);
+        if(pawn) {
+            graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'P':'p';
+            continue;
+        }
+        
+        Knight* knight = dynamic_cast<Knight*>(*it);
+        if(knight) {
+            graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'N':'n';
+            continue;
+        }
+            
+        Bishop* bishop = dynamic_cast<Bishop*>(*it);
+        if(bishop) {
+            graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'B':'b';
+            continue;
+        }
+        
+        Rook* rook = dynamic_cast<Rook*>(*it);
+        if(rook) {
+            graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'R':'r';
+            continue;
+        }
+        
+        Queen* queen = dynamic_cast<Queen*>(*it);
+        if(queen) {
+            graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'Q':'q';
+            continue;
+        }
+            
+        King* king = dynamic_cast<King*>(*it);
+        if(king) {
+            graphicboard[(*it)->getPosition().getX()][(*it)->getPosition().getY()] = (*it)->getTeamColor()?'K':'k';
+            continue;
+        }
+    }
+    
+    std::cout << std::endl << "  A B C D E F G H" <<  std::endl;
+    for(short i = 0; i<8; i++){
+        std::cout << i+1;
+        for(short j = 0; j<8; j++)
+            std::cout <<' '<<graphicboard[j][i];
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }
