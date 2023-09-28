@@ -103,6 +103,10 @@ void Board::pawnPromotion() {
                 while(true){
                     std::cout << "pawn Promotion to (r,n,b,q):" << std::endl;
                     std::cin >> c;
+                    if(!std::cin.good())
+                        c = 0;
+                    std::cin.clear();
+                    
                     if(c == 'R' || c == 'r') {
                         _piecesList.insert(_piecesList.begin(),std::make_shared<Rook>(p,team));
                         break;

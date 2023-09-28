@@ -124,6 +124,12 @@ bool Chess::playturn() {
         _board.printBoard();
         std::cout << "(GU to give up, Sa to save the game)\nType the piece position:" << std::endl;
         std::cin >> x >> y;
+        if(!std::cin.good()) {
+            x = 0;
+            y = 0;
+        }
+        std::cin.clear();
+        
         if(x == 'G' && y == 'U') {
             std::cout <<"\n***- " << (!turn ?"UperCases(white)":"LowerCases(Black)") << " WIN the game -***\n\n";
             return false;
@@ -141,6 +147,11 @@ bool Chess::playturn() {
         _board.printBoard();
         std::cout << "(GU to give up, BC and SC for respectively big castle and small castle)\nType the " << static_cast<char>(piece->getPosition().getX() + 'A')<< static_cast<char>(piece->getPosition().getY() + '1') <<  " "<< piece->getName() <<" desired new position:\n";
         std::cin >> x >> y;
+        if(!std::cin.good()) {
+            x = 0;
+            y = 0;
+        }
+        std::cin.clear();
         
         if(x == 'G' && y == 'U') {
             std::cout <<"\n***- " << (!turn ?"UperCases(white)":"LowerCases(Black)") << " WIN the game -***\n\n";
