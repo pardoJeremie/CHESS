@@ -16,7 +16,7 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
     short varx = -1, vary = -1;
     bool possible = false;
     // board is her for castle special move (two pieces move) and deleting eaten pieces.
-    if(x == 'B' && y == 'C') { // big castle
+    if((x == 'B' || x == 'b') && (y == 'C' || y == 'c')) { // big castle
         std::vector<std::pair <Point,EnumSpecialMove>>::iterator it;
         for(it = _possibleMove.begin(); it !=_possibleMove.end(); it ++) {
             if((*it).second == BIGCASTLE) { // if true, the piece is a king or a rook
@@ -45,10 +45,10 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
                     }
             }
         }
-        std::cout << "\nMove not possible." << std::endl;
+        std::cout << "\nMove not possible.\n";
         return false;
     }
-    else if(x == 'S' && y == 'C') { // small castle
+    else if((x == 'S' || x == 's') && (y == 'C'|| y == 'c')) { // small castle
         std::vector<std::pair <Point,EnumSpecialMove>>::iterator it;
         for(it = _possibleMove.begin(); it !=_possibleMove.end(); it ++) {
             if((*it).second == SMALLCASTLE) {
@@ -78,7 +78,7 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
                     }
             }
         }
-        std::cout << "\nMove not possible." << std::endl;
+        std::cout << "\nMove not possible.\n";
         return false;
     }
     else {
@@ -103,7 +103,7 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
         }
         
         if(varx == -1 || vary == -1) {
-            std::cout << "\nWrong user input." << std::endl;
+            std::cout << "\nWrong user input.\n";
             return false;
         }
         
@@ -154,7 +154,7 @@ bool Piece::applyMove(const char x, const char y, Board& board) {
             return true;
         }
         else {
-            std::cout << "\nMove not possible." << std::endl;
+            std::cout << "\nMove not possible.\n";
             return false;
         }
     }

@@ -15,9 +15,5 @@ int main(int argc, const char * argv[]) {
      - checkmat because the program calculated that no movement could alter the check
      */
     Chess game;
-    game.startNewGame();
-    game.saveGame();
-    if(game.loadGame())
-        while(game.playturn());
     return 0;
 }

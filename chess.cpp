@@ -13,11 +13,72 @@
 #include "chess.hpp"
 #include "piece.hpp"
 
-void Chess::startMainLoop() {
-    while (true) {
-        // main menu
-        break; // quit
+bool Chess::playturn() {
+    char x, y;
+    std::shared_ptr<Piece> piece;
+   /* (Qu to quit)*/
+    _board.updatePiecesMoves();
+    
+    // loock for end condition
+    EnumEndCondition v = _board.returnEndCondition(_turn);
+    if(v == NO_END_COND_BUT_CHECK)
+        std::cout <<"\n- "<< (_turn ?"UperCases(white)":"LowerCases(Black)") << "king is CHECK -\n";
+    else if(_board.returnEndCondition(!_turn) == CHECKMAT) {
+        std::cout <<"\n***- "<< (!_turn ?"UperCases(white)":"LowerCases(Black)") << " king is CHECKMAT," << (_turn ?"UperCases (white)":"LowerCases (Black)") << " WIN the game -***\n\n";
+        return false;
     }
+    else if(v == STALEMATE) {
+        std::cout << "\n***- " <<(_turn ?"UperCases(white)":"LowerCases(Black)") << " cannot move any piece, DRAW by stalemate -***\n\n";
+        return false;
+    }
+    
+    std::cout <<"\n"<< (_turn ?"UperCases(white)":"LowerCases(Black)") << " turn to play\n";
+    
+    while(true) {
+        _board.printBoard();
+        std::cout << "(\'GU\' to give up, \'Sa\' to save the game)\nType the piece position:\n";
+        std::cin >> x >> y;
+        if(!std::cin.good()) {
+            x = 0;
+            y = 0;
+        }
+        std::cin.clear();
+        
+        if((x == 'G' || x == 'g') && (y == 'U' || y == 'u')) {
+            std::cout <<"\n***- " << (!_turn ?"UperCases(white)":"LowerCases(Black)") << " WIN the game -***\n\n";
+            return false;
+        }
+        else if((x == 'S' || x == 's') && (y == 'A' || y == 'a')) {
+            saveGame();
+            std::cout << "\n***- game save -***\n\n\n";
+            return false;
+        }
+        else if((piece = _board.returnPiece(x,y,_turn))) // if piece not == nullptr
+            break;
+    }
+
+    while(true) {
+        _board.printBoard();
+        std::cout << "(\'GU\' to give up, \'BC\' and \'SC\' for respectively big castle and small castle)\nType the " << static_cast<char>(piece->getPosition().getX() + 'A')<< static_cast<char>(piece->getPosition().getY() + '1') <<  " "<< piece->getName() <<" desired new position:\n";
+        std::cin >> x >> y;
+        if(!std::cin.good()) {
+            x = 0;
+            y = 0;
+        }
+        std::cin.clear();
+        
+        if((x == 'G' || x == 'g') && (y == 'U' || y == 'u')) {
+            std::cout <<"\n***- " << (!_turn ?"UperCases(white)":"LowerCases(Black)") << " WIN the game -***\n\n";
+            return false;
+        }
+        else if(piece->applyMove(x,y,_board)) // move impossible, // wrong input
+            break;
+    }
+    
+    _board.pawnPromotion();
+    
+    _turn = !_turn;
+    return true;
 }
 
 void Chess::startNewGame() {
@@ -101,74 +162,6 @@ void Chess::startNewGame() {
     std::cout <<"\n ***- New Game -***\n";
 }
 
-bool Chess::playturn() {
-    char x, y;
-    std::shared_ptr<Piece> piece;
-   /* (Qu to quit)*/
-    _board.updatePiecesMoves();
-    
-    // loock for end condition
-    EnumEndCondition v = _board.returnEndCondition(_turn);
-    if(v == NO_END_COND_BUT_CHECK)
-        std::cout <<"\n- "<< (_turn ?"UperCases(white)":"LowerCases(Black)") << "king is CHECK -\n";
-    else if(_board.returnEndCondition(!_turn) == CHECKMAT) {
-        std::cout <<"\n***- "<< (!_turn ?"UperCases(white)":"LowerCases(Black)") << " king is CHECKMAT," << (_turn ?"UperCases (white)":"LowerCases (Black)") << " WIN the game -***\n\n";
-        return false;
-    }
-    else if(v == STALEMATE) {
-        std::cout << "\n***- " <<(_turn ?"UperCases(white)":"LowerCases(Black)") << " cannot move any piece, DRAW by stalemate -***\n\n";
-        return false;
-    }
-    
-    std::cout <<"\n"<< (_turn ?"UperCases(white)":"LowerCases(Black)") << " turn to play" << std::endl;
-    
-    while(true) {
-        _board.printBoard();
-        std::cout << "(GU to give up, Sa to save the game)\nType the piece position:" << std::endl;
-        std::cin >> x >> y;
-        if(!std::cin.good()) {
-            x = 0;
-            y = 0;
-        }
-        std::cin.clear();
-        
-        if(x == 'G' && y == 'U') {
-            std::cout <<"\n***- " << (!_turn ?"UperCases(white)":"LowerCases(Black)") << " WIN the game -***\n\n";
-            return false;
-        }
-        else if(x == 'S' && y == 'a') {
-            std::cout << "\n***- game save -***\n\n"<< std::endl;
-            // to implement
-            return false;
-        }
-        else if((piece = _board.returnPiece(x,y,_turn))) // if piece not == nullptr
-            break;
-    }
-
-    while(true) {
-        _board.printBoard();
-        std::cout << "(GU to give up, BC and SC for respectively big castle and small castle)\nType the " << static_cast<char>(piece->getPosition().getX() + 'A')<< static_cast<char>(piece->getPosition().getY() + '1') <<  " "<< piece->getName() <<" desired new position:\n";
-        std::cin >> x >> y;
-        if(!std::cin.good()) {
-            x = 0;
-            y = 0;
-        }
-        std::cin.clear();
-        
-        if(x == 'G' && y == 'U') {
-            std::cout <<"\n***- " << (!_turn ?"UperCases(white)":"LowerCases(Black)") << " WIN the game -***\n\n";
-            return false;
-        }
-        else if(piece->applyMove(x,y,_board)) // move impossible, // wrong input
-            break;
-    }
-    
-    _board.pawnPromotion();
-    
-    _turn = !_turn;
-    return true;
-}
-
 bool Chess::loadGame() {
     std::ifstream fstream("save");
     if (fstream.is_open()) {
@@ -217,54 +210,85 @@ bool Chess::loadGame() {
             }
             
         } while (fstream);
+        std::cout <<"\n ***- Game Loaded -***\n";
         return true;
     }
-    std::cout << "error, cannot open file\n";
+    std::cout << "Cannot open file, no save present\n";
     return false;
 }
 
-bool Chess::saveGame() {
+void Chess::saveGame() {
     std::ofstream fstream("save");
-    if (fstream.is_open()) {
+    
+    fstream << _turn << std::endl;
         
-        fstream << _turn << std::endl;
-        
-        for(std::vector<std::shared_ptr<Piece>>::iterator it = _board.getPiecesList().begin(); it != _board.getPiecesList().end(); it++) {
-            std::shared_ptr<Pawn> pawn =  std::dynamic_pointer_cast<Pawn>(* it);
-            if(pawn) {
-                fstream << 'p' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << ' ' << pawn->_didSpecialMoveLastTurn << std::endl;
-                continue;
-            }
-            std::shared_ptr<Rook> rook =  std::dynamic_pointer_cast<Rook>(* it);
-            if(rook) {
-                fstream << 'r' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << std::endl;
-                continue;
-            }
-            std::shared_ptr<Knight> knight =  std::dynamic_pointer_cast<Knight>(* it);
-            if(knight) {
-                fstream << 'n' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << std::endl;
-                continue;
-            }
-            std::shared_ptr<Bishop> bishop =  std::dynamic_pointer_cast<Bishop>(* it);
-            if(bishop) {
-                fstream << 'b' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << std::endl;
-                continue;
-            }
-            std::shared_ptr<Queen> queen =  std::dynamic_pointer_cast<Queen>(* it);
-            if(queen) {
-                fstream << 'q' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << std::endl;
-                continue;
-            }
-            std::shared_ptr<King> king =  std::dynamic_pointer_cast<King>(* it);
-            if(king) {
-                fstream << 'k' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << std::endl;
-                continue;
-            }
+    for(std::vector<std::shared_ptr<Piece>>::iterator it = _board.getPiecesList().begin(); it != _board.getPiecesList().end(); it++) {
+        std::shared_ptr<Pawn> pawn =  std::dynamic_pointer_cast<Pawn>(* it);
+        if(pawn) {
+            fstream << 'p' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << ' ' << pawn->_didSpecialMoveLastTurn << std::endl;
+            continue;
+        }
+        std::shared_ptr<Rook> rook =  std::dynamic_pointer_cast<Rook>(* it);
+        if(rook) {
+            fstream << 'r' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << std::endl;
+            continue;
+        }
+        std::shared_ptr<Knight> knight =  std::dynamic_pointer_cast<Knight>(* it);
+        if(knight) {
+            fstream << 'n' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << std::endl;
+            continue;
+        }
+        std::shared_ptr<Bishop> bishop =  std::dynamic_pointer_cast<Bishop>(* it);
+        if(bishop) {
+            fstream << 'b' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << std::endl;
+            continue;
+        }
+        std::shared_ptr<Queen> queen =  std::dynamic_pointer_cast<Queen>(* it);
+        if(queen) {
+            fstream << 'q' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << std::endl;
+            continue;
+        }
+        std::shared_ptr<King> king =  std::dynamic_pointer_cast<King>(* it);
+        if(king) {
+            fstream << 'k' << ' ' << (*it)->getPosition().getX() << ' ' << (*it)->getPosition().getY() << ' ' << (*it)->getTeamColor() << ' ' << (*it)->getMoved() << std::endl;
+            continue;
         }
     }
-    else {
-        std::cout << "error, cannot open file\n";
-        return false;
+}
+
+void Chess::deletSave() {
+    if (remove("save") == 0)
+        std::cout << "Deleted successfully\n";
+    else
+        std::cout <<"Unable to delete the save\n";
+}
+
+void Chess::menu() {
+    char x;
+    while(true) {
+        std::cout << "\n###- WELCOM TO CHESS -###\n\n* To play a new game, write \'N\'\n* To load the saved party, write \'L\'\n* To delete the saved party, write \'D\'\n* To quit, write \'Q\'\n\n";
+        std::cin >> x;
+        if(!std::cin.good()) {
+            x = 0;
+        }
+        std::cin.clear();
+        if(x == 'N' || x == 'n') {
+            startNewGame();
+            while(playturn());
+        }
+        else if(x == 'L' || x == 'l') {
+            if(loadGame())
+                while(playturn());
+        }
+        else if(x == 'D' || x == 'd') {
+            deletSave();
+        }
+        else if(x == 'Q' || x == 'q') {
+            std::cout << "\n###- Thank you for playing -###\n\n";
+            return;
+        }
+        else {
+            std::cout << "\nWrong user input.\n";
+        }
     }
-    return true;
 }

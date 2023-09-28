@@ -14,21 +14,20 @@
 
 class Chess {
 public:
-    Chess(){}
+    Chess() { menu(); }
     Chess(const Chess&) = delete;
     Chess(Chess&&) = delete;
     Chess& operator=( const Chess&) = delete;
     Chess& operator=(Chess&&) = delete;
     ~Chess(){}
     
-    void startMainLoop();
-//private:
-    void startNewGame();
-    void chargeGame(std::string path);
+private:
     bool playturn();
-    void quit();
+    void startNewGame();
     bool loadGame();
-    bool saveGame();
+    void saveGame();
+    void deletSave();
+    void menu();
     
     Board _board;
     bool _turn=true;

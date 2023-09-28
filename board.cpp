@@ -101,7 +101,7 @@ void Board::pawnPromotion() {
                 bool team = (*it)->getTeamColor();
                 _piecesList.erase(it);
                 while(true){
-                    std::cout << "pawn Promotion to (r,n,b,q):" << std::endl;
+                    std::cout << "pawn Promotion to (r,n,b,q):\n";
                     std::cin >> c;
                     if(!std::cin.good())
                         c = 0;
@@ -125,7 +125,7 @@ void Board::pawnPromotion() {
                         break;
                     }
                     else
-                        std::cout << "\nWrong user input." << std::endl;
+                        std::cout << "\nWrong user input.\n";
                 }
                 return; // only one promotation is possible each turn!
             }
@@ -178,7 +178,7 @@ std::shared_ptr<Piece> Board::returnPiece(const char x,const char y, const bool 
     }
     
     if(varx == -1 || vary == -1) {
-        std::cout << "Wrong user input" << std::endl;
+        std::cout << "Wrong user input\n";
         return nullptr;
     }
     
@@ -186,7 +186,7 @@ std::shared_ptr<Piece> Board::returnPiece(const char x,const char y, const bool 
         if((*it)->getTeamColor() == teamColor) {
             if((*it)->getPosition().getX() == varx && (*it)->getPosition().getY() == vary) {
                 if((*it)->getPossibleMoves().empty()) {
-                    std::cout << "The selected " << (*it)->getName() << " cannot move! Choose another piece." << std::endl;
+                    std::cout << "The selected " << (*it)->getName() << " cannot move! Choose another piece.\n";
                     return nullptr;
                 }
                 return (*it);
@@ -245,7 +245,7 @@ void Board::printBoard() {
         }
     }
     
-    std::cout << std::endl << "  A B C D E F G H" <<  std::endl;
+    std::cout << "\n  A B C D E F G H\n";
     for(short i = 0; i<8; i++){
         std::cout << i+1;
         for(short j = 0; j<8; j++)
