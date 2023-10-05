@@ -14,7 +14,7 @@
 #include "basicGeometric.hpp"
 
 class Board;
-enum EnumSpecialMove : short { NA, PAWNSPECIAL, PAWNDIAGONAL, BIGCASTLE, SMALLCASTLE};
+enum EnumSpecialMove : short { NA, PAWNSPECIAL, PAWNDIAGONAL, BIGCASTLE, SMALLCASTLE}; // utiliser enum class??
 
 class Piece {
 public:
@@ -23,7 +23,7 @@ public:
     Piece(Piece&&) = delete;
     Piece& operator=( const Piece&) = delete;
     Piece& operator=(Piece&&) = delete;
-    virtual ~Piece(){}
+    virtual ~Piece() = default;
     
     bool getTeamColor() const { return _teamColor; }
     
@@ -65,7 +65,7 @@ inline bool operator==(const Piece& a,const Piece& b)
 class Pawn : public Piece {
 public:
     Pawn(Point& position, bool teamColor, bool moved = false, bool didSpecialMoveLastTurn = false) : Piece(position,teamColor,moved,"PAWN"), _didSpecialMoveLastTurn(didSpecialMoveLastTurn) {}
-    ~Pawn(){}
+    ~Pawn() = default;
     
     void updatePossibleMove(Board& board);
 
@@ -75,7 +75,7 @@ public:
 class Knight : public Piece {
 public:
     Knight(Point& position, bool teamColor, bool moved = false) : Piece(position,teamColor,moved,"KNIGHT") {}
-    ~Knight(){}
+    ~Knight() = default;
     
     void updatePossibleMove(Board& board);
 };
@@ -83,7 +83,7 @@ public:
 class Bishop : public Piece {
 public:
     Bishop(Point& position, bool teamColor, bool moved = false) : Piece(position,teamColor,moved,"BISHOP") {}
-    ~Bishop(){}
+    ~Bishop() = default;
     
     void updatePossibleMove(Board& board);
 };
@@ -91,7 +91,7 @@ public:
 class Rook : public Piece {
 public:
     Rook(Point& position, bool teamColor, bool moved = false) : Piece(position,teamColor,moved,"ROOK") {}
-    ~Rook(){}
+    ~Rook() = default;
     
     void updatePossibleMove(Board& board);
 };
@@ -99,7 +99,7 @@ public:
 class Queen : public Piece {
 public:
     Queen(Point& position, bool teamColor, bool moved = false) : Piece(position,teamColor,moved,"QUEEN") {}
-    ~Queen(){}
+    ~Queen() = default;
     
     void updatePossibleMove(Board& board);
 };
@@ -107,7 +107,7 @@ public:
 class King : public Piece {
 public:
     King(Point& position, bool teamColor, bool moved = false) : Piece(position,teamColor, moved,"KING") {}
-    ~King(){}
+    ~King() = default;
 
     void updatePossibleMove(Board& board);
 

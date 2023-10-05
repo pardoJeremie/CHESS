@@ -19,7 +19,7 @@ public:
     Chess(Chess&&) = delete;
     Chess& operator=( const Chess&) = delete;
     Chess& operator=(Chess&&) = delete;
-    ~Chess(){}
+    ~Chess() = default;
     
 private:
     bool playturn();

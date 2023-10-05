@@ -21,7 +21,7 @@ public:
     Board(Board&&) = delete;
     Board& operator=( const Board&) = delete;
     Board& operator=(Board&&) = delete;
-    ~Board() {}
+    ~Board() = default;
     
     std::vector<std::shared_ptr<Piece>>& getPiecesList() { return _piecesList; }
     bool addToPiecesList(std::shared_ptr<Piece> piece);

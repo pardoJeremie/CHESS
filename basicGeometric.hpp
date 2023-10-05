@@ -22,7 +22,7 @@ public:
     Point(Point&&) = default;
     Point & operator=( const Point&) = default;
     Point& operator=(Point&&) = default;
-    ~Point(){}
+    ~Point() = default;
     
     void updatePosition(int32_t x, int32_t y) {
         _x=x;
@@ -46,25 +46,20 @@ inline bool operator==(const Point& a,const Point& b)
 //*****************
 class Zone {
 public:
-    Zone(){};
-    ~Zone(){};
+    Zone() = default;
+    virtual ~Zone() = default;
    virtual bool inZone(const Point& point) const = 0;
 };
 
 class RectangleZone : public Zone {
 public:
-    RectangleZone( uint16_t w, uint16_t l, Point& point) : _w(w), _l(l), _leftMostPoint(point) {}
-    RectangleZone( uint16_t w, uint16_t l) : _w(w), _l(l), _leftMostPoint(Point(0,0)) {}
-    RectangleZone(const RectangleZone& other) : _w(other._w), _l(other._l), _leftMostPoint(other._leftMostPoint) {}
+    RectangleZone( uint16_t w, uint16_t l, const Point& point) : _w(w), _l(l), _leftMostPoint(point) {}
+    RectangleZone( uint16_t w, uint16_t l) : RectangleZone(w, l, Point(0,0)) {}
+    RectangleZone(const RectangleZone& other) = default;
     RectangleZone(RectangleZone&&) = delete;
-    RectangleZone & operator=( const RectangleZone & other ) {
-        _w = other._w;
-        _l = other._l;
-        _leftMostPoint = other._leftMostPoint;
-        return *this;
-    }
+    RectangleZone & operator=( const RectangleZone & other ) = default;
     RectangleZone& operator=(RectangleZone&&) = delete;
-    ~RectangleZone() {}
+    ~RectangleZone() = default;
 
     // if _w = 0 or _l = 0, the zone cannot contain any Point
     bool inZone(const Point& point) const {
